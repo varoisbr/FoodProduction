@@ -1,0 +1,203 @@
+@page
+@model ProductionModel
+@{
+    ViewData["Title"] = "Production & Packaging";
+}
+
+<div class="container-fluid mt-5">
+    <div class="row">
+        <div class="col-md-12">
+            <h1 class="mb-4">Production & Packaging Management</h1>
+
+            @if (Model.CurrentBatch == null)
+            {
+                <!-- Create New Batch Section -->
+                <div class="card mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">Start New Production Batch</h5>
+                    </div>
+                    <div class="card-body">
+                        <form method="post" class="row g-3">
+                            <div class="col-md-4">
+                                <label for="productId" class="form-label">Product</label>
+                                <select class="form-select" id="productId" name="productId" required>
+                                    <option value="">-- Select a Product --</option>
+                                    @foreach (var product in Model.Products)
+                                    {
+                                        <option value="@product.Id">@product.Name</option>
+                                    }
+                                </select>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label for="gainPercentage" class="form-label">Gain/Loss Percentage (%)</label>
+                                <input type="number" class="form-control" id="gainPercentage" name="gainPercentage"
+                                       value="25" step="0.01" min="-100" />
+                            </div>
+
+                            <div class="col-md-4">
+                                <label for="notes" class="form-label">Notes (Optional)</label>
+                                <input type="text" class="form-control" id="notes" name="notes" />
+                            </div>
+
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-primary" name="action" value="createBatch">
+                                    <i class="bi bi-plus-circle"></i> Create Batch
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <!-- Active Batch Section -->
+                <div class="card mb-4">
+                    <div class="card-header bg-success text-white">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0">Active Batch: @Model.CurrentBatch.Product?.Name (ID: @Model.CurrentBatch.Id)</h5>
+                            <form method="post" style="display:inline;">
+                                <button type="submit" class="btn btn-sm btn-danger" name="action" value="endBatch">
+                                    <i class="bi bi-x-circle"></i> End Batch
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mb-3">
+                            <div class="col-md-3">
+                                <p><strong>Started:</strong> @Model.CurrentBatch.StartDate.ToString("yyyy-MM-dd HH:mm")</p>
+                            </div>
+                            <div class="col-md-3">
+                                <p><strong>Gain/Loss:</strong> @Model.CurrentBatch.GainPercentage.ToString("F2")%</p>
+                            </div>
+                            <div class="col-md-6">
+                                <p><strong>Notes:</strong> @(Model.CurrentBatch.Notes ?? "No notes")</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Add Pack Section -->
+                <div class="card mb-4">
+                    <div class="card-header bg-info text-white">
+                        <h5 class="mb-0">Add New Pack</h5>
+                    </div>
+                    <div class="card-body">
+                        <form method="post" class="row g-3">
+                            <div class="col-md-6">
+                                <label for="weightKg" class="form-label">Measured Weight (KG)</label>
+                                <input type="number" class="form-control" id="weightKg" name="weightKg"
+                                       step="0.01" min="0" required />
+                            </div>
+
+                            <div class="col-md-6">
+                                <button type="submit" class="btn btn-success mt-4" name="action" value="addPack">
+                                    <i class="bi bi-box-seam"></i> Add Pack & Print Label
+                                </button>
+                            </div>
+                        </form>
+
+                        @if (Model.SuccessMessage != null)
+                        {
+                            <div class="alert alert-success mt-3" role="alert">
+                                <strong>Success!</strong> @Model.SuccessMessage
+                            </div>
+                        }
+                    </div>
+                </div>
+
+                <!-- Batch Summary -->
+                @if (Model.BatchSummary != null)
+                {
+                    <div class="row mb-4">
+                        <div class="col-md-3">
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <h6 class="card-title text-muted">Total Packs</h6>
+                                    <h3 class="card-text">@Model.BatchSummary.TotalPacks</h3>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <h6 class="card-title text-muted">Total Weight</h6>
+                                    <h3 class="card-text">@Model.BatchSummary.TotalWeight.ToString("F2") kg</h3>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <h6 class="card-title text-muted">Average Yield</h6>
+                                    <h3 class="card-text">@Model.BatchSummary.AverageYield.ToString("F2") kg</h3>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <h6 class="card-title text-muted">Total Value</h6>
+                                    <h3 class="card-text">@Model.BatchSummary.TotalValue.ToString("C2")</h3>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Packs Table -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0">Packs in Batch (Printed: @Model.BatchSummary.PrintedPacks / @Model.BatchSummary.TotalPacks)</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-striped table-hover">
+                                    <thead class="table-dark">
+                                        <tr>
+                                            <th>Pack ID</th>
+                                            <th class="text-end">Weight (kg)</th>
+                                            <th class="text-end">Price</th>
+                                            <th class="text-center">Status</th>
+                                            <th class="text-center">Created</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @if (Model.Packs.Any())
+                                        {
+                                            @foreach (var pack in Model.Packs)
+                                            {
+                                                <tr>
+                                                    <td>#@pack.Id</td>
+                                                    <td class="text-end">@pack.WeightKg.ToString("F2")</td>
+                                                    <td class="text-end">@pack.Price.ToString("C2")</td>
+                                                    <td class="text-center">
+                                                        @if (pack.Printed)
+                                                        {
+                                                            <span class="badge bg-success"><i class="bi bi-check-circle"></i> Printed</span>
+                                                        }
+                                                        else
+                                                        {
+                                                            <span class="badge bg-warning"><i class="bi bi-clock"></i> Pending</span>
+                                                        }
+                                                    </td>
+                                                    <td class="text-center">@pack.CreatedAt.ToString("HH:mm")</td>
+                                                </tr>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <tr>
+                                                <td colspan="5" class="text-center text-muted">No packs added yet</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+    </div>
+</div>

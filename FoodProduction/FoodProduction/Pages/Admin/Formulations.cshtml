@@ -1,0 +1,113 @@
+@page
+@model FormulationsAdminModel
+@{
+    ViewData["Title"] = "Manage Product Formulations";
+}
+
+<div class="container-fluid mt-5">
+    <div class="row">
+        <div class="col-md-12">
+            <h1 class="mb-4">Product Formulation Management</h1>
+
+            <!-- Add Formulation Form -->
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Add Ingredient to Product</h5>
+                </div>
+                <div class="card-body">
+                    <form method="post" class="row g-3">
+                        <div class="col-md-4">
+                            <label for="selectedProductId" class="form-label">Product</label>
+                            <select class="form-select" id="selectedProductId" name="selectedProductId" required>
+                                <option value="">-- Select Product --</option>
+                                @foreach (var product in Model.Products)
+                                {
+                                    <option value="@product.Id" selected="@(Model.SelectedProductId == product.Id)">
+                                        @product.Name
+                                    </option>
+                                }
+                            </select>
+                        </div>
+
+                        @if (Model.SelectedProductId > 0)
+                        {
+                            <div class="col-md-4">
+                                <label for="ingredientId" class="form-label">Ingredient</label>
+                                <select class="form-select" id="ingredientId" name="ingredientId" required>
+                                    <option value="">-- Select Ingredient --</option>
+                                    @foreach (var ingredient in Model.Ingredients)
+                                    {
+                                        <option value="@ingredient.Id">@ingredient.Name</option>
+                                    }
+                                </select>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label for="ratio" class="form-label">Ratio (%)</label>
+                                <input type="number" class="form-control" id="ratio" name="ratio"
+                                       step="0.01" min="0" max="100" required />
+                            </div>
+
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-success" asp-page-handler="AddIngredient">
+                                    <i class="bi bi-plus-circle"></i> Add Ingredient
+                                </button>
+                            </div>
+                        }
+                    </form>
+                </div>
+            </div>
+
+            <!-- Product Formulations -->
+            @if (Model.SelectedProductId > 0 && Model.ProductFormulations.Any())
+            {
+                <div class="card">
+                    <div class="card-header bg-info text-white">
+                        <h5 class="mb-0">@(Model.Products.FirstOrDefault(p => p.Id == Model.SelectedProductId)?.Name) - Formulation</h5>
+                    </div>
+                    <div class="card-body">
+                        <p class="text-muted">Total Ratio: <strong>@Model.ProductFormulations.Sum(pf => pf.Ratio).ToString("F2")%</strong></p>
+
+                        <div class="table-responsive">
+                            <table class="table table-striped table-hover">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>Ingredient</th>
+                                        <th class="text-center">Ratio (%)</th>
+                                        <th class="text-end">Cost per KG</th>
+                                        <th class="text-center">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var formulation in Model.ProductFormulations)
+                                    {
+                                        <tr>
+                                            <td>@formulation.Ingredient?.Name</td>
+                                            <td class="text-center">@formulation.Ratio.ToString("F2")%</td>
+                                            <td class="text-end">@formulation.Ingredient?.CostPerKg.ToString("C2")</td>
+                                            <td class="text-center">
+                                                <form method="post" asp-page-handler="RemoveIngredient" style="display:inline;">
+                                                    <input type="hidden" name="id" value="@formulation.Id" />
+                                                    <button type="submit" class="btn btn-sm btn-danger"
+                                                            onclick="return confirm('Remove this ingredient?');">
+                                                        <i class="bi bi-trash"></i> Remove
+                                                    </button>
+                                                </form>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            }
+            else if (Model.SelectedProductId > 0)
+            {
+                <div class="alert alert-info" role="alert">
+                    <i class="bi bi-info-circle"></i> No ingredients added to this product yet. Use the form above to add ingredients.
+                </div>
+            }
+        </div>
+    </div>
+</div>

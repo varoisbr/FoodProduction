@@ -1,0 +1,99 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Home";
+}
+
+<div class="container-fluid mt-5">
+    <div class="row">
+        <div class="col-md-12">
+            <h1 class="mb-4">Food Production Management System</h1>
+
+            <div class="row">
+                <div class="col-md-3 mb-4">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <i class="bi bi-calculator" style="font-size: 2rem; color: #0d6efd;"></i>
+                            <h5 class="card-title mt-3">Formulation</h5>
+                            <p class="card-text">Calculate product formulations and export recipes</p>
+                            <a href="@Url.Page("/Formulation")" class="btn btn-primary">Go to Calculator</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-3 mb-4">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <i class="bi bi-box-seam" style="font-size: 2rem; color: #198754;"></i>
+                            <h5 class="card-title mt-3">Production</h5>
+                            <p class="card-text">Manage batches and print ZPL labels</p>
+                            <a href="@Url.Page("/Production")" class="btn btn-success">Go to Production</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-3 mb-4">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <i class="bi bi-gear" style="font-size: 2rem; color: #ffc107;"></i>
+                            <h5 class="card-title mt-3">Configuration</h5>
+                            <p class="card-text">Manage products, ingredients & templates</p>
+                            <div class="btn-group" role="group" style="margin-top: 10px;">
+                                <a href="@Url.Page("/Admin/Products")" class="btn btn-sm btn-warning">Products</a>
+                                <a href="@Url.Page("/Admin/Ingredients")" class="btn btn-sm btn-warning">Ingredients</a>
+                                <a href="@Url.Page("/Admin/Formulations")" class="btn btn-sm btn-warning">Formulations</a>
+                                <a href="@Url.Page("/Admin/LabelTemplates")" class="btn btn-sm btn-warning">Labels</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-3 mb-4">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <i class="bi bi-api" style="font-size: 2rem; color: #6f42c1;"></i>
+                            <h5 class="card-title mt-3">API</h5>
+                            <p class="card-text">REST API for external integrations</p>
+                            <a href="/swagger" class="btn" style="background-color: #6f42c1; border-color: #6f42c1; color: white;">View Swagger</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <hr />
+
+            <div class="row mt-4">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0">System Statistics</h5>
+                        </div>
+                        <div class="card-body">
+                            <p><strong>Products:</strong> @Model.ProductCount</p>
+                            <p><strong>Ingredients:</strong> @Model.IngredientCount</p>
+                            <p><strong>Label Templates:</strong> @Model.TemplateCount</p>
+                            <p><strong>Active Batches:</strong> @Model.ActiveBatchCount</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0">Quick Start</h5>
+                        </div>
+                        <div class="card-body">
+                            <ol>
+                                <li>Set up your <strong>Products</strong> and <strong>Ingredients</strong> in the Configuration area</li>
+                                <li>Define <strong>Product Formulations</strong> to specify ingredient ratios</li>
+                                <li>Customize <strong>Label Templates</strong> with ZPL code</li>
+                                <li>Use <strong>Formulation Calculator</strong> to compute ingredient quantities</li>
+                                <li>Start <strong>Production Batches</strong> and add packs for automatic label printing</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,32 @@
+# SQLite
+*.db
+*.db-shm
+*.db-wal
+
+# Logs
+logs/
+*.log
+
+# Labels/Output
+labels/
+
+# .NET
+bin/
+obj/
+*.csproj.user
+.vs/
+.vscode/
+.idea/
+
+# Environment
+.env
+.env.local
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+*.swp
+*.swo
+*~
